@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import articleContent from "./article-content";
 import ArticleList from "../components/ArticleList";
 import NotFoundPage from "../pages/NotFoundPage";
+import CommentsList from "../components/Commentlist";
+import UpvotesSection from "../components/UpvoteSection";
+import AddComponent from "../components/AddcommentForm";
 
 const Article = ({ match }) => {
   const name = match.params.name;
@@ -10,8 +13,14 @@ const Article = ({ match }) => {
   const [articleInfo, setArticleInfo] = useState({ upvotes: 0, comments: [] });
 
   useEffect(() => {
-    setArticleInfo({ upvotes: Math.ceil(Math.random() * 10) });
-  }, []);
+    const fetchData = async () => {
+      const result = await fetch(`/api/articles/${name}`);
+      const body = await result.json();
+      console.log("body", body);
+      setArticleInfo(body);
+    };
+    fetchData();
+  }, [name]);
 
   if (!article) {
     return <NotFoundPage />;
@@ -23,11 +32,17 @@ const Article = ({ match }) => {
   return (
     <>
       <h1>{article.title}</h1>
-      <p>This post has been upvoted {articleInfo.upvotes} times</p>
+      <UpvotesSection
+        articleName={name}
+        upvotes={articleInfo.upvotes}
+        setArticleInfo={setArticleInfo}
+      />
 
       {article.content.map((paragraph, key) => (
         <p key={key}>{paragraph}</p>
       ))}
+      <CommentsList comments={articleInfo.comments} />
+      <AddComponent articleName={name} setArticleInfo={setArticleInfo} />
       <h3>Other Articles:</h3>
       <ArticleList articles={otherArticles} />
     </>
