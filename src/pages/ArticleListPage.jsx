@@ -9,7 +9,7 @@ const ArticleListPage = () => {
 
   return (
     <div>
-      <h1>Article List:-</h1>
+      <h1>Article List :-</h1>
       <ArticleList articles={articleContent} />
     </div>
   );
